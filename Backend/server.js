@@ -3,7 +3,7 @@ const mysql = require('mysql2');
 const connection = mysql.createConnection({
   host: 'srv1009.hstgr.io', // o el host real
   user: 'u158333685_parqueo',  // O el que corresponda
-  password: 'Nuevasparqueo12',
+  password: 'Nuevasguate12',
   database: 'u158333685_parqueadero', // igual que user, o el nombre de la base
   port: 3306
 });
