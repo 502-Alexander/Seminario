@@ -33,7 +33,7 @@ function Login() {
         <div className="input-box">
           <input
             type="password"
-            placeholder="passworddd"
+            placeholder="password"
             required
             value={contrasena}
             onChange={(e) => setContrasena(e.target.value)}
