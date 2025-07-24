@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './Login.css';
-import 'boxicons/css/boxicons.css';
+import 'boxicons/css/boxicons.min.css';
 
 function Login() {
   const [usuario, setUsuario] = useState('');
@@ -9,65 +9,61 @@ function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Aquí colocas la lógica de autenticación con fetch/axios
     console.log('Usuario:', usuario);
     console.log('Contraseña:', contrasena);
     console.log('Recordarme:', recordarme);
-    // Ejemplo: redireccionar tras login exitoso
-    // navigate('/dashboard');
   };
 
   return (
-    <div className="box">
-      <form onSubmit={handleSubmit} className="container">
-        <div className="top-header">
-          <span>Andev web</span>
-          <header>Iniciar Sesión</header>
-        </div>
+    <div className="container">
+      <form onSubmit={handleSubmit}>
+        <h1>Login</h1>
 
-        <div className="input-field">
+        <div className="input-box">
           <input
             type="text"
-            className="input"
-            placeholder="Usuario"
+            placeholder="username"
             required
             value={usuario}
             onChange={(e) => setUsuario(e.target.value)}
           />
-          <i className="bx bx-user"></i>
+          <i className="bx bxs-user"></i>
         </div>
 
-        <div className="input-field">
+        <div className="input-box">
           <input
             type="password"
-            className="input"
-            placeholder="Contraseña"
+            placeholder="passworddd"
             required
             value={contrasena}
             onChange={(e) => setContrasena(e.target.value)}
           />
-          <i className="bx bx-lock-alt"></i>
+          <i className="bx bxs-lock-alt"></i>
         </div>
 
-        <div className="input-field">
-          <input type="submit" className="submit" value="Inicio" />
-        </div>
-
-        <div className="bottom">
-          <div className="left">
+        <div className="remember-forgot">
+          <label>
             <input
               type="checkbox"
-              id="check"
               checked={recordarme}
               onChange={() => setRecordarme(!recordarme)}
             />
-            <label htmlFor="check"> Recordarme</label>
-          </div>
-          <div className="right">
-            <label><a href="#">¿Olvidaste la contraseña?</a></label>
-          </div>
+            Recuérdame
+          </label>
+          <a href="#">Forgot password?</a>
+        </div>
+
+        <button type="submit" className="btn">
+          Login
+        </button>
+
+        <div className="register-link">
+          <p>
+            ¿No tienes una cuenta? <a href="#">¡Regístrate aquí!</a>
+          </p>
         </div>
       </form>
+
     </div>
   );
 }
