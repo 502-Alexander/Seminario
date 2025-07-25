@@ -5,8 +5,8 @@ import 'boxicons/css/boxicons.min.css';
 function Login() {
   const [usuario, setUsuario] = useState('');
   const [contrasena, setContrasena] = useState('');
+  const [recordarme, setRecordarme] = useState(false);
   const [rol, setRol] = useState('');
-  const [recordarme, setRecordarme] = useState(false); // ✅ Línea agregada
 
   const handleSubmit = (e) => {
     e.preventDefault();
