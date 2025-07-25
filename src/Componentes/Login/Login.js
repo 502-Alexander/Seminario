@@ -6,12 +6,31 @@ function Login() {
   const [usuario, setUsuario] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [recordarme, setRecordarme] = useState(false);
+  const [rol, setRol] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Usuario:', usuario);
-    console.log('Contraseña:', contrasena);
-    console.log('Recordarme:', recordarme);
+
+    const datos = {
+      usuario,
+      contrasena,
+      rol,
+      recordarme
+    };
+
+    fetch('http://localhost:3001/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(datos)
+    })
+      .then(res => res.json())
+      .then(data => {
+        alert(data.mensaje);
+        console.log(data);
+      })
+      .catch(err => {
+        console.error('Error al enviar datos:', err);
+      });
   };
 
   return (
@@ -22,7 +41,7 @@ function Login() {
         <div className="input-box">
           <input
             type="text"
-            placeholder="username"
+            placeholder="Nombre de usuario"
             required
             value={usuario}
             onChange={(e) => setUsuario(e.target.value)}
@@ -33,12 +52,27 @@ function Login() {
         <div className="input-box">
           <input
             type="password"
-            placeholder="passworddd"
+            placeholder="Contraseña"
             required
             value={contrasena}
             onChange={(e) => setContrasena(e.target.value)}
           />
           <i className="bx bxs-lock-alt"></i>
+        </div>
+
+        <div className="input-box">
+          <select
+            required
+            value={rol}
+            onChange={(e) => setRol(e.target.value)}
+            className="input"
+          >
+            <option value="">Selecciona un rol</option>
+            <option value="admin">Administrador</option>
+            <option value="usuario">Usuario</option>
+            <option value="supervisor">Supervisor</option>
+          </select>
+          <i className="bx bxs-user-badge"></i>
         </div>
 
         <div className="remember-forgot">
@@ -50,11 +84,11 @@ function Login() {
             />
             Recuérdame
           </label>
-          <a href="#">Forgot password?</a>
+          <a href="#">¿Olvidaste tu contraseña?</a>
         </div>
 
         <button type="submit" className="btn">
-          Login
+          Iniciar sesión
         </button>
 
         <div className="register-link">
@@ -63,7 +97,6 @@ function Login() {
           </p>
         </div>
       </form>
-
     </div>
   );
 }

@@ -16,6 +16,8 @@ body {
   background-attachment: fixed;
 }
 
+
+
 #credits {
   position: fixed;
   bottom: 10px;
@@ -34,16 +36,15 @@ body {
 
 .container {
   width: 420px;
-  background: transparent;
-  border: 2px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(18px);
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  background-color: rgba(30, 42, 56, 0.95); /* Gris azulado sólido */
   border-radius: 10px;
   padding: 30px 40px;
   color: #fff;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
 }
+
 
 .container h1,
 header {
@@ -72,7 +73,8 @@ span {
 }
 
 .input,
-.input-box input {
+.input-box input,
+.input-box select {
   width: 100%;
   height: 100%;
   background: rgba(255, 255, 255, 0.1);
@@ -88,6 +90,22 @@ span {
 .input-box input::placeholder,
 .input::placeholder {
   color: #fff;
+}
+
+/* Personalización del SELECT */
+.input-box select {
+  background: rgba(0, 0, 0, 0.5);
+  color: #00ffcc;
+  appearance: none;
+}
+
+.input-box select:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.input-box select option {
+  background-color: #00323d;
+  color: #00ffcc;
 }
 
 .input-box i,
