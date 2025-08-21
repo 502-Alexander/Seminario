@@ -30,10 +30,10 @@ function Login() {
       .then(data => {
         alert(data.mensaje);
         console.log(data);
-       
+        if (data.exito) {
           // Redirigir al menú si el login fue exitoso
           navigate('/menu');
-        
+        }
       })
       .catch(err => {
         console.error('Error al enviar datos:', err);

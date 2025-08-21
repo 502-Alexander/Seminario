@@ -44,10 +44,11 @@ app.post('/api/login', (req, res) => {
     }
 
     if (results.length > 0) {
-      res.json({ mensaje: 'Inicio de sesión exitoso', usuario: results[0] });
-    } else {
-      res.status(401).json({ mensaje: 'Credenciales incorrectas' });
-    }
+  res.json({ mensaje: 'Inicio de sesión exitoso', exito: true, usuario: results[0] });
+} else {
+  res.status(401).json({ mensaje: 'Credenciales incorrectas', exito: false });
+}
+
   });
 });
 
