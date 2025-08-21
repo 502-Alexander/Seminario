@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // ← IMPORTANTE
 import './Login.css';
 import 'boxicons/css/boxicons.min.css';
 
@@ -7,6 +8,8 @@ function Login() {
   const [contrasena, setContrasena] = useState('');
   const [recordarme, setRecordarme] = useState(false);
   const [rol, setRol] = useState('');
+
+  const navigate = useNavigate(); // ← IMPORTANTE
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -27,6 +30,10 @@ function Login() {
       .then(data => {
         alert(data.mensaje);
         console.log(data);
+       
+          // Redirigir al menú si el login fue exitoso
+          navigate('/menu');
+        
       })
       .catch(err => {
         console.error('Error al enviar datos:', err);

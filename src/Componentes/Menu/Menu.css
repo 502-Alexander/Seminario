@@ -1,0 +1,77 @@
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.navbar {
+  background-color: #1e1e2f;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  position: relative;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.logo {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+  transition: transform 0.3s ease;
+}
+
+.nav-links a {
+  color: #fff;
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+}
+
+.nav-links a:hover {
+  background-color: #3a3a5d;
+}
+
+/* Icono de menú */
+.menu-icon {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+}
+
+.bar {
+  width: 25px;
+  height: 3px;
+  background-color: #fff;
+  border-radius: 2px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .nav-links {
+    position: absolute;
+    top: 60px;
+    right: 0;
+    background-color: #2b2b44;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+    padding: 15px 0;
+    transform: translateY(-200%);
+  }
+
+  .nav-links.open {
+    transform: translateY(0);
+  }
+
+  .menu-icon {
+    display: flex;
+  }
+}
