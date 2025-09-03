@@ -31,8 +31,8 @@ function Login() {
         alert(data.mensaje);
         console.log(data);
         if (data.exito) {
-          // Redirigir al menú si el login fue exitoso
-          navigate('/menu');
+          // Redirigir al menú si el login fue exitoso y pasar el rol
+          navigate('/menu', { state: { rol: rol } });
         }
       })
       .catch(err => {
