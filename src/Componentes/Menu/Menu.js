@@ -2,8 +2,8 @@ import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "../Menu/Menu.css";
 import { 
-  FaCar, FaComments, FaAddressBook, FaChartPie, FaFileInvoiceDollar, 
-  FaUsers, FaLink, FaBoxes, FaCog, FaSignOutAlt, FaUserTie 
+  FaReceipt, FaCalculator, FaCar, FaChartPie, FaFileInvoiceDollar, 
+  FaUsers, FaCog, FaSignOutAlt, FaUserTie 
 } from "react-icons/fa";
 
 //credenciales 
@@ -34,15 +34,13 @@ const Menu = () => {
   };
 
   const items = [
-    { icon: <FaCar />, label: "Registro De Vehículos", color: "#4CAF50" },
-    { icon: <FaComments />, label: "Control De Entradas Y Salidas De Vehículos", color: "#E91E63" },
-    { icon: <FaAddressBook />, label: "Generación De Tickets", color: "#00BCD4" },
-    { icon: <FaChartPie />, label: "Cálculo Automático De Tarifas", color: "#FF4081" },
-    { icon: <FaFileInvoiceDollar />, label: "Cobros Y Facturación", color: "#FF9800" },
-    { icon: <FaUsers />, label: "Gestion De Usuarios Del Sistema", color: "#009688" },
-    { icon: <FaLink />, label: "Reportes Automáticos", color: "#795548" },
-    { icon: <FaBoxes />, label: "Seguridad En cobro", color: "#F44336" },
-    { icon: <FaCog />, label: "Ajustes", color: "#CDDC39" },
+    { icon: <FaUsers />, label: "Gestion De Usuarios Del Sistema", color: "#66d4ff" },
+    { icon: <FaCar />, label: "Registro De Entradas y Salidas De Vehículos", color: "#66d4ff" },
+    { icon: <FaCalculator />, label: "Cálculo Automático De Tarifas", color: "#66d4ff" },
+    { icon: <FaReceipt />, label: "Generación De Tickets", color: "#66d4ff" },
+    { icon: <FaFileInvoiceDollar />, label: "Cobros Y Facturación", color: "#66d4ff" },
+    { icon: <FaChartPie />, label: "Reportes Automáticos", color: "#66d4ff" },
+    { icon: <FaCog />, label: "Ajustes", color: "#66d4ff" },
   ];
 
   return (

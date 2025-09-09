@@ -6,6 +6,7 @@ body {
   min-height: 100vh;
   margin: 0;
   position: relative;
+  padding-left: 87px; /* espacio para el mensaje */
 }
 
 /* Mensaje de bienvenida */
@@ -66,17 +67,17 @@ body {
 .menu-container {
   padding: 30px;
   background: rgba(43, 62, 80, 0.7); /* Azul con transparencia del 80% */
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  border-radius: 25px;
+  box-shadow: 0 4px 25px rgba(0,0,0,0.3);
   text-align: center;
   max-width: 1000px;
-  width: 90%;
+  width: 96%;
 }
 
 .menu-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   margin-bottom: 20px;
   padding: 0 10px;
 }
@@ -91,8 +92,8 @@ body {
 
 .logout-button {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  align-items: end; /* Alinea el icono con el texto */
+  gap: 4px;
   background-color: #b22819cf;
   color: white;
   border: none;
@@ -104,9 +105,14 @@ body {
   transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
+.logout-button span {
+  line-height: 0; /* elimina espacio extra del texto */
+}
+
+
 .logout-button:hover {
   background-color: #c0392b;
-  transform: translateY(-2px);
+  /*transform: translateY(-2px);*/
 }
 
 .logout-button svg {
@@ -124,7 +130,7 @@ body {
 
 .menu-card {
   background-color: #3a3a5d;
-  color: #fff;
+  color: #0b0b0b;
   padding: 20px 10px;
   border-radius: 14px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
