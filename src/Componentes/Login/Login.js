@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // ← IMPORTANTE
+import { useNavigate } from 'react-router-dom';
 import './Login.css';
 import 'boxicons/css/boxicons.min.css';
 
@@ -9,35 +9,41 @@ function Login() {
   const [recordarme, setRecordarme] = useState(false);
   const [rol, setRol] = useState('');
 
-  const navigate = useNavigate(); // ← IMPORTANTE
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const datos = {
-      usuario,
-      contrasena,
-      rol,
-      recordarme
-    };
+    // Validación rápida antes de enviar
+    if (!usuario || !contrasena || !rol) {
+      alert("Por favor completa todos los campos");
+      return;
+    }
 
-    fetch('http://localhost:3001/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(datos)
-    })
-      .then(res => res.json())
-      .then(data => {
-        alert(data.mensaje);
-        console.log(data);
-        if (data.exito) {
-          // Redirigir al menú si el login fue exitoso y pasar el rol
-          navigate('/menu', { state: { rol: rol } });
-        }
-      })
-      .catch(err => {
-        console.error('Error al enviar datos:', err);
+    try {
+      const res = await fetch('http://localhost:3001/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ usuario, contrasena, rol, recordarme })
       });
+
+      const data = await res.json();
+
+      console.log("Respuesta backend:", data);
+      alert(data.mensaje);
+
+      if (data.exito) {
+        // Instrucción para Guardar token y rol desde el backend
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("rol", data.usuario.rol);
+        localStorage.setItem("usuario", data.usuario.usuario); // Instrucción para guardar el nombre del usuario
+        // Instrucción para Redirigir al menú
+        navigate("/menu", { state: { rol: data.usuario.rol } });
+      }
+    } catch (err) {
+      console.error("Error al enviar datos:", err);
+      alert("Error al conectar con el servidor");
+    }
   };
 
   return (
@@ -94,13 +100,11 @@ function Login() {
           <a href="#">¿Olvidaste tu contraseña?</a>
         </div>
 
-        <button type="submit" className="btn">
-          Iniciar sesión
-        </button>
+        <button type="submit" className="btn">Iniciar sesión</button>
 
         <div className="register-link">
           <p>
-            ¿No tienes una cuenta? <a href="#">¡Regístrate aquí!</a>
+            Hola...!!! 😎😂
           </p>
         </div>
       </form>

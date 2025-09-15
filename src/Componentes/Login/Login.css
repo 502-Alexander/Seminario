@@ -164,9 +164,9 @@ label a:hover {
 }
 
 .register-link {
-  font-size: 14.5px;
+  font-size: 19px;
   text-align: center;
-  margin: 20px 0 15px;
+  margin: 20px 0 0px;
 }
 
 .register-link p a {

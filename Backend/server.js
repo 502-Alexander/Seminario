@@ -1,12 +1,16 @@
 const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql2');
+const jwt = require('jsonwebtoken');
+require('dotenv').config(); // Instrucción para cargar las variables de entorno
+
+const SECRET_KEY = process.env.SECRET_KEY;
+//const PORT = process.env.PORT || 3001;
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Conexión a la base de datos
 const connection = mysql.createConnection({
   host: 'srv1009.hstgr.io',
   user: 'u158333685_parqueo',
@@ -23,7 +27,7 @@ connection.connect((err) => {
   console.log('✅ Conexión exitosa a la base de datos');
 });
 
-// Ruta para login
+// Ruta para el login
 app.post('/api/login', (req, res) => {
   const { usuario, contrasena, rol } = req.body;
 
@@ -31,9 +35,10 @@ app.post('/api/login', (req, res) => {
     return res.status(400).json({ mensaje: 'Faltan datos' });
   }
 
+  // Se agrego Binary para que la comparación sea sensible a mayúsculas y minúsculas
   const query = `
     SELECT * FROM usuarios
-    WHERE usuario = ? AND contrasena = ? AND rol = ?
+    WHERE BINARY usuario = ? AND contrasena = ? AND rol = ?
     LIMIT 1
   `;
 
@@ -44,11 +49,22 @@ app.post('/api/login', (req, res) => {
     }
 
     if (results.length > 0) {
-  res.json({ mensaje: 'Inicio de sesión exitoso', exito: true, usuario: results[0] });
-} else {
-  res.status(401).json({ mensaje: 'Credenciales incorrectas', exito: false });
-}
+      const user = results[0];
+      const token = jwt.sign(
+        { id: user.id, usuario: user.usuario, rol: user.rol },
+        SECRET_KEY,
+        { expiresIn: "1h" }
+      );
 
+      res.json({ 
+        mensaje: 'Inicio de sesión exitoso', 
+        exito: true, 
+        usuario: user,
+        token 
+      });
+    } else {
+      res.status(401).json({ mensaje: 'Credenciales incorrectas', exito: false });
+    }
   });
 });
 
