@@ -2,29 +2,31 @@ const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql2');
 const jwt = require('jsonwebtoken');
-require('dotenv').config(); // Instrucción para cargar las variables de entorno
 
-const SECRET_KEY = process.env.SECRET_KEY;
-//const PORT = process.env.PORT || 3001;
+const SECRET_KEY = "tu_clave_secreta"; // puedes dejarla aquí fijo si no usas .env
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+// 🔹 Configuración de conexión a Azure MySQL
 const connection = mysql.createConnection({
-  host: 'srv1009.hstgr.io',
-  user: 'u158333685_parqueo',
-  password: 'Nuevasguate12',
-  database: 'u158333685_parqueadero',
-  port: 3306
+  host: "seminario.database.windows.net", // ejemplo: mydbserver.mysql.database.azure.com
+  user: "seminario",              // ejemplo: adminuser@mydbserver
+  password: "Seminario123",
+  database: "seminario",
+  port: 3306,
+  ssl: {
+    rejectUnauthorized: false // Azure requiere SSL para conexiones seguras
+  }
 });
 
 connection.connect((err) => {
   if (err) {
-    console.error('Error de conexión:', err);
+    console.error("❌ Error de conexión a Azure:", err);
     return;
   }
-  console.log('✅ Conexión exitosa a la base de datos');
+  console.log("✅ Conexión exitosa a Azure MySQL");
 });
 
 // Ruta para el login
@@ -35,7 +37,6 @@ app.post('/api/login', (req, res) => {
     return res.status(400).json({ mensaje: 'Faltan datos' });
   }
 
-  // Se agrego Binary para que la comparación sea sensible a mayúsculas y minúsculas
   const query = `
     SELECT * FROM usuarios
     WHERE BINARY usuario = ? AND contrasena = ? AND rol = ?
@@ -44,7 +45,7 @@ app.post('/api/login', (req, res) => {
 
   connection.query(query, [usuario, contrasena, rol], (err, results) => {
     if (err) {
-      console.error('Error en la consulta:', err);
+      console.error("❌ Error en la consulta:", err);
       return res.status(500).json({ mensaje: 'Error del servidor' });
     }
 
@@ -57,13 +58,13 @@ app.post('/api/login', (req, res) => {
       );
 
       res.json({ 
-        mensaje: 'Inicio de sesión exitoso', 
-        exito: true, 
+        mensaje: "Inicio de sesión exitoso",
+        exito: true,
         usuario: user,
-        token 
+        token
       });
     } else {
-      res.status(401).json({ mensaje: 'Credenciales incorrectas', exito: false });
+      res.status(401).json({ mensaje: "Credenciales incorrectas", exito: false });
     }
   });
 });
