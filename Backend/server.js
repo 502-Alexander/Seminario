@@ -11,8 +11,8 @@ app.use(express.json());
 
 // 🔹 Configuración de conexión a Azure MySQL
 const connection = mysql.createConnection({
-  host: "seminario.database.windows.net", // ejemplo: mydbserver.mysql.database.azure.com
-  user: "seminario",              // ejemplo: adminuser@mydbserver
+  host: "seminario.mysql.database.azure.com", // ejemplo: mydbserver.mysql.database.azure.com
+  user: "administradorseminario",              // ejemplo: adminuser@mydbserver
   password: "Seminario123",
   database: "seminario",
   port: 3306,
