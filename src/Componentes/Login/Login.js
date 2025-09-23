@@ -21,7 +21,7 @@ function Login() {
     }
 
     try {
-      const res = await fetch('http://localhost:3001/api/login', {
+const res = await fetch('https://seminario-backend-1.onrender.com/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ usuario, contrasena, rol, recordarme })

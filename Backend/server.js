@@ -17,7 +17,7 @@ const connection = mysql.createConnection({
   database: "seminario",
   port: 3306,
   ssl: {
-    rejectUnauthorized: false // Azure requiere SSL para conexiones seguras
+    rejectUnauthorized: true // Azure requiere SSL para conexiones seguras
   }
 });
 
