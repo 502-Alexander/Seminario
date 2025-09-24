@@ -46,7 +46,7 @@ const Menu = () => {
   };
 
   const items = [
-    { icon: <FaUsers />, label: "Gestion De Usuarios Del Sistema", color: "#66d4ff" },
+    { icon: <FaUsers />, label: "Gestion De Usuarios Del Sistema", color: "#66d4ff", route: "/GestionUsuarios" },
     { icon: <FaCar />, label: "Registro De Entradas y Salidas De Vehículos-", color: "#66d4ff", route: "/vehiculos" },
     { icon: <FaCalculator />, label: "Cálculo Automático De Tarifas", color: "#66d4ff" },
     { icon: <FaReceipt />, label: "Generación De Tickets", color: "#66d4ff", route: "/ticket" },

@@ -5,6 +5,8 @@ import Navbar from './Componentes/Menu/Menu';
 import Vehiculos from './Componentes/Vehiculos Entrada/EntradaVehiculos'; // Ajusta si está en otra carpeta
 import ProtectedRoute from './ProtectedRoute';
 import TicketEntrada from './Componentes/Ticket Entrada/Ticket_Entrada'; // importa el nuevo componente
+import GestionUsuarios from './Componentes/GestionDeUsuarios/GestionUsuarios';
+
 
 
 function App() {
@@ -30,6 +32,14 @@ function App() {
         } 
       />
 
+      <Route 
+        path="/GestionUsuarios" 
+        element={
+          <ProtectedRoute>
+            <GestionUsuarios />
+          </ProtectedRoute>
+        } 
+      />
 
       <Route 
         path="/ticket" 

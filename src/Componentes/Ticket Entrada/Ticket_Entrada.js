@@ -17,12 +17,15 @@ const TicketEntrada = () => {
       </button>
 
       <div className="ticket">
-        <h2>Ticket de Entrada</h2>
-        <p><strong>Placa:</strong> ________</p>
-        <p><strong>Marca:</strong> ________</p>
-        <p><strong>Color:</strong> ________</p>
-        <p><strong>Tipo:</strong> ________</p>
-        <p><strong>Hora de Ingreso:</strong> ________</p>
+        <h2>PARQUEO LA PROSPERIDAD</h2>
+        <p><strong>Número de Placa:</strong> 095LBL</p>
+        <p><strong>Fecha:</strong> 24/09/2025</p>
+        <p><strong>Hora de Entrada:</strong> 10:06:35 AM</p>
+        <p><strong>TARIFA POR MES</strong></p>
+        <hr />
+        <p>
+          EL PROPIETARIO DEL VEHÍCULO SE ESTACIONA POR SU CUENTA Y RIESGO SE ESTÁ PROHIBIDO VENDER O CEDER ESTE TICKET. EXTRAVIADO SE COBRARÁ $0.50 Y DEBERÁ COMPROBAR PERMANENTEMENTE LA PROPIEDAD DEL VEHÍCULO. EL PARQUEO SE CIERRA A LAS 5:00 P.M.
+        </p>
       </div>
     </div>
   );
