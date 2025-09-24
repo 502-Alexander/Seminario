@@ -47,9 +47,9 @@ const Menu = () => {
 
   const items = [
     { icon: <FaUsers />, label: "Gestion De Usuarios Del Sistema", color: "#66d4ff" },
-    { icon: <FaCar />, label: "Registro De Entradas y Salidas De Vehículos", color: "#66d4ff" },
+    { icon: <FaCar />, label: "Registro De Entradas y Salidas De Vehículos-", color: "#66d4ff", route: "/vehiculos" },
     { icon: <FaCalculator />, label: "Cálculo Automático De Tarifas", color: "#66d4ff" },
-    { icon: <FaReceipt />, label: "Generación De Tickets", color: "#66d4ff" },
+    { icon: <FaReceipt />, label: "Generación De Tickets", color: "#66d4ff", route: "/ticket" },
     { icon: <FaFileInvoiceDollar />, label: "Cobros Y Facturación", color: "#66d4ff" },
     { icon: <FaChartPie />, label: "Reportes Automáticos", color: "#66d4ff" },
     { icon: <FaCog />, label: "Ajustes", color: "#66d4ff" },
@@ -83,13 +83,19 @@ const Menu = () => {
           </button>
         </div>
         <div className="menu-grid">
-          {items.map((item, index) => (
-            <div key={index} className="menu-card" style={{ backgroundColor: item.color }}>
-              <div className="menu-icon">{item.icon}</div>
-              <p className="menu-label">{item.label}</p>
-            </div>
-          ))}
-        </div>
+  {items.map((item, index) => (
+    <div
+      key={index}
+      className="menu-card"
+      style={{ backgroundColor: item.color, cursor: item.route ? 'pointer' : 'default' }}
+      onClick={() => item.route && navigate(item.route)}
+    >
+      <div className="menu-icon">{item.icon}</div>
+      <p className="menu-label">{item.label}</p>
+    </div>
+  ))}
+</div>
+
       </div>
     </div>
   );

@@ -104,7 +104,7 @@ const res = await fetch('https://seminario-backend-1.onrender.com/api/login', {
 
         <div className="register-link">
           <p>
-            Hola...!!! 😎😂 HOLA OTRA PRUEBA JSJS
+            
           </p>
         </div>
       </form>
