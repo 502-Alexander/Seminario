@@ -1,7 +1,7 @@
 // src/components/Vehiculos.js
 import React, { useState, useEffect } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
-import { FaHome } from 'react-icons/fa';
+import { FaHome, FaSignOutAlt } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import './EntradaVehiculos.css';
 
@@ -26,7 +26,7 @@ const Vehiculos = () => {
 
   const fetchVehiculos = async () => {
     try {
-      const response = await fetch('https://seminario-backend-1.onrender.com/vehiculos/activos');
+      const response = await fetch('http://localhost:3001/vehiculos/activos');
       if (!response.ok) throw new Error('Error al obtener vehículos');
       const data = await response.json();
       setVehiculosActivos(data);
@@ -38,7 +38,7 @@ const Vehiculos = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('https://seminario-backend-1.onrender.com/vehiculos', {
+      const response = await fetch('http://localhost:3001/vehiculos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(vehiculo),
@@ -58,14 +58,24 @@ const Vehiculos = () => {
   return (
     <div className="vehiculos-container">
       
-      {/* Botón regresar */}
-      <button 
-        className="btn-regresar"
-        onClick={() => navigate('/menu')}
-      >
-        <FaHome style={{ marginRight: 8 }} />
-        Regresar al Menú
-      </button>
+      {/* Botones de navegación */}
+      <div className="navigation-buttons">
+        <button 
+          className="btn-regresar"
+          onClick={() => navigate('/menu')}
+        >
+          <FaHome style={{ marginRight: 8 }} />
+          Regresar al Menú
+        </button>
+        
+        <button 
+          className="btn-salida"
+          onClick={() => navigate('/vehiculos/salida')}
+        >
+          <FaSignOutAlt style={{ marginRight: 8 }} />
+          Ir a Salida
+        </button>
+      </div>
 
       <h2 className="vehiculos-title">Ingreso de Vehículos</h2>
       

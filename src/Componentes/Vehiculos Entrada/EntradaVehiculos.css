@@ -79,21 +79,41 @@
   margin-top: 20px;
   /* DataGrid viene con scroll y estilos propios */
 }
-.btn-regresar {
+.navigation-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 10px;
+}
+
+.btn-regresar, .btn-salida {
   display: inline-flex;
   align-items: center;
-  background-color: #1976d2;
-  color: white;
   padding: 8px 16px;
   border-radius: 8px;
   border: none;
   cursor: pointer;
   font-weight: 600;
   font-size: 1rem;
-  margin-bottom: 20px;
-  transition: background-color 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+.btn-regresar {
+  background-color: #6c757d;
+  color: white;
 }
 
 .btn-regresar:hover {
-  background-color: #115293;
+  background-color: #5a6268;
+  transform: translateY(-2px);
+}
+
+.btn-salida {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-salida:hover {
+  background-color: #c82333;
+  transform: translateY(-2px);
 }
