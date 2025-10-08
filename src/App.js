@@ -7,6 +7,7 @@ import SalidaVehiculos from './Componentes/Vehiculos Salida/SalidaVehiculos'; //
 import ProtectedRoute from './ProtectedRoute';
 import TicketEntrada from './Componentes/Ticket Entrada/Ticket_Entrada'; // importa el nuevo componente
 import GestionUsuarios from './Componentes/GestionDeUsuarios/GestionUsuarios';
+import ParkingReports from './Componentes/Reportes/ParkingReports'; // Nuevo componente de reportes
 
 
 
@@ -65,6 +66,15 @@ function App() {
         element={
           <ProtectedRoute>
             <TicketEntrada />
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/reportes" 
+        element={
+          <ProtectedRoute>
+            <ParkingReports />
           </ProtectedRoute>
         } 
       />

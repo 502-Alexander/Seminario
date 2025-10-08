@@ -479,3 +479,48 @@ app.get('/api/usuarios', (req, res) => {
     res.json(results);
   });
 });
+
+// 🆕 NUEVA RUTA: Obtener registros para reportes
+app.get('/api/registros', (req, res) => {
+  // Primero verificar qué columnas existen realmente
+  const describeQuery = "DESCRIBE vehiculos";
+  
+  connection.query(describeQuery, (err, structure) => {
+    if (err) {
+      console.error('❌ Error al obtener estructura de tabla:', err);
+      return res.status(500).json({ 
+        error: 'Error al verificar estructura de tabla',
+        details: err.message 
+      });
+    }
+    
+    console.log('📋 Estructura de tabla vehiculos:', structure);
+    
+    // Consulta básica con columnas que sabemos que existen
+    const query = `
+      SELECT * 
+      FROM vehiculos 
+      ORDER BY id DESC
+      LIMIT 50
+    `;
+    
+    connection.query(query, (err, results) => {
+      if (err) {
+        console.error('❌ Error al obtener registros para reportes:', err);
+        return res.status(500).json({ 
+          error: 'Error al obtener registros',
+          details: err.message 
+        });
+      }
+      
+      console.log(`✅ Registros obtenidos para reportes: ${results.length}`);
+      console.log('📝 Ejemplo de registro:', results[0] || 'No hay registros');
+      
+      res.json({
+        total: results.length,
+        estructura: structure,
+        registros: results
+      });
+    });
+  });
+});
