@@ -97,6 +97,8 @@ span {
   background: rgba(0, 0, 0, 0.5);
   color: #00ffcc;
   appearance: none;
+  text-align: left;
+  padding-left: 42px;
 }
 
 .input-box select:hover {
@@ -106,6 +108,8 @@ span {
 .input-box select option {
   background-color: #00323d;
   color: #00ffcc;
+  text-align: left;
+  padding-left: 10px;
 }
 
 .input-box i,
