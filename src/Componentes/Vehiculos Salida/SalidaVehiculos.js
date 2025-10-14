@@ -6,7 +6,7 @@ import './SalidaVehiculos.css';
 // --- Función para obtener datos del ticket desde la API ---
 const obtenerDatosTicket = async (codigo) => {
   try {
-    console.log('🔍 Buscando ticket con código:', codigo);
+    console.log('🔍 Buscando ticket con código de barras:', codigo);
     const response = await fetch(`http://localhost:3001/api/ticket/${codigo}`);
     const data = await response.json();
     
@@ -16,7 +16,8 @@ const obtenerDatosTicket = async (codigo) => {
       console.log('✅ Ticket encontrado:', data);
       return {
         success: true,
-        ticketId: codigo,
+        ticketId: data.ticketId, // ID del vehículo para procesamiento
+        codigoBarras: data.codigoBarras, // Código de barras escaneado
         placa: data.placa,
         horaEntrada: data.horaEntrada,
         vehiculo: data.vehiculo
@@ -99,6 +100,32 @@ const SalidaVehiculos = () => {
       return `Base: Q16.50 + ${horas} hora(s) × Q3.00`;
     }
   };
+
+  // Función para resetear el formulario
+  const resetFormulario = useCallback(() => {
+    setCodigoBarras('');
+    setDatosTicket(null);
+    setTicketEncontrado(false);
+    setTiempoEstacionado(null);
+    setMontoAPagar(0);
+    setEfectivoRecibido('');
+    setCambioADar(0);
+    setInfoTarifa(null);
+    setUltimaActualizacion(null);
+    
+    // Limpiar referencias
+    datosTicketRef.current = null;
+    
+    if (intervaloRef.current) {
+      clearInterval(intervaloRef.current);
+      intervaloRef.current = null;
+    }
+    
+    if (autoRefresh) {
+      clearInterval(autoRefresh);
+      setAutoRefresh(null);
+    }
+  }, [autoRefresh]);
 
   // Función para recalcular tiempo en tiempo real
   const recalcularTiempo = useCallback((ticketData = null) => {
@@ -214,7 +241,7 @@ const SalidaVehiculos = () => {
           setDatosTicket(null);
           setTicketEncontrado(false);
           datosTicketRef.current = null;
-          setTiempoEstacionado(`Ticket no encontrado: ${ticket.error || 'ID inválido'}`);
+          setTiempoEstacionado(`Ticket no encontrado: ${ticket.error || 'Código de barras inválido'}`);
           setMontoAPagar(0);
           setInfoTarifa(null);
           setUltimaActualizacion(null);
@@ -226,7 +253,7 @@ const SalidaVehiculos = () => {
 
     const timeoutId = setTimeout(buscarTicket, 500);
     return () => clearTimeout(timeoutId);
-  }, [codigoBarras, recalcularTiempo]); // Solo depende de codigoBarras y recalcularTiempo (que es estable)
+  }, [codigoBarras, recalcularTiempo, resetFormulario]); // Incluye resetFormulario como dependencia
 
   // Limpiar auto-refresh al desmontar
   useEffect(() => {
@@ -263,7 +290,7 @@ const SalidaVehiculos = () => {
   const handleProcesarPago = async () => {
     // Validaciones mejoradas
     if (!datosTicket) {
-      alert('❌ Por favor, escanee un ticket válido primero.');
+      alert('❌ Por favor, escanee un código de barras válido primero.');
       return;
     }
     
@@ -335,30 +362,7 @@ const SalidaVehiculos = () => {
     }
   };
 
-  const resetFormulario = () => {
-    setCodigoBarras('');
-    setDatosTicket(null);
-    setTicketEncontrado(false);
-    setTiempoEstacionado(null);
-    setMontoAPagar(0);
-    setEfectivoRecibido('');
-    setCambioADar(0);
-    setInfoTarifa(null);
-    setUltimaActualizacion(null);
-    
-    // Limpiar referencias
-    datosTicketRef.current = null;
-    
-    if (intervaloRef.current) {
-      clearInterval(intervaloRef.current);
-      intervaloRef.current = null;
-    }
-    
-    if (autoRefresh) {
-      clearInterval(autoRefresh);
-      setAutoRefresh(null);
-    }
-  };
+
 
   return (
     <div className="salida-vehiculos-container">
@@ -386,13 +390,26 @@ const SalidaVehiculos = () => {
           <input
             id="codigoBarras"
             type="text"
-            placeholder="Ingrese el ID (ej. 1, 2, 3...)"
+            placeholder="Escanee o ingrese el código de barras (ej. ABC123-1234567890)"
             value={codigoBarras}
             onChange={(e) => setCodigoBarras(e.target.value)}
             className="input codigo-barras-campo"
             autoFocus
           />
         </div>
+
+        {/* Código de Barras Escaneado */}
+        {datosTicket && (
+          <div className="campo-grupo">
+            <label className="label">**Código de Barras:**</label>
+            <input
+              type="text"
+              value={datosTicket.codigoBarras || 'No disponible'}
+              readOnly
+              className="input auto-campo"
+            />
+          </div>
+        )}
 
         {/* Placa del vehículo */}
         {datosTicket && (
@@ -412,7 +429,7 @@ const SalidaVehiculos = () => {
           <label className="label">Tiempo Estacionado:</label>
           <input
             type="text"
-            value={tiempoEstacionado || 'Esperando código...'}
+            value={tiempoEstacionado || 'Esperando código de barras...'}
             readOnly
             className={`input ${tiempoEstacionado && tiempoEstacionado.includes('no encontrado') ? 'error-campo' : 'auto-campo'}`}
           />

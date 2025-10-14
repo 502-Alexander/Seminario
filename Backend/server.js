@@ -316,13 +316,13 @@ app.get('/api/test/estadisticas', (req, res) => {
 app.get('/api/ticket/:codigo', (req, res) => {
   const { codigo } = req.params;
   
-  // Buscar el vehículo por su ID (simulando que el código corresponde al ID)
+  // Buscar el vehículo por su código de barras
   const query = `
-    SELECT id, placa, marca, color, tipo, 
+    SELECT id, placa, marca, color, tipo, codigo_barra,
            CONVERT_TZ(hora_ingreso, '+00:00', @@session.time_zone) as hora_ingreso_local,
            hora_ingreso
     FROM vehiculos 
-    WHERE id = ? AND estado = 'Activo'
+    WHERE codigo_barra = ? AND estado = 'Activo'
     LIMIT 1
   `;
   
@@ -348,7 +348,8 @@ app.get('/api/ticket/:codigo', (req, res) => {
       
       res.json({
         success: true,
-        ticketId: codigo,
+        ticketId: vehiculo.id, // ID del vehículo para procesamiento de salida
+        codigoBarras: vehiculo.codigo_barra, // Código de barras para referencia
         placa: vehiculo.placa,
         horaEntrada: horaEntrada,
         vehiculo: vehiculo
