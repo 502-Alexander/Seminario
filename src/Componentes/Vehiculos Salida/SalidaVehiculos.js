@@ -57,21 +57,16 @@ const SalidaVehiculos = () => {
     let descripcion = "";
     
     if (minutos <= 30) {
-      tarifa = 1.00;
-      descripcion = "Tarifa básica (0-30 min)";
+      tarifa = 6.00;
+      descripcion = "Tarifa por media hora (0-30 min)";
     } else if (minutos <= 60) {
-      tarifa = 1.00 + Math.ceil((minutos - 30) / 30) * 1.50;
-      descripcion = "Tarifa intermedia (31-60 min)";
-    } else if (minutos <= 120) {
-      tarifa = 2.50 + Math.ceil((minutos - 60) / 30) * 2.00;
-      descripcion = "Tarifa elevada (1-2 horas)";
-    } else if (minutos <= 240) {
-      tarifa = 6.50 + Math.ceil((minutos - 120) / 30) * 2.50;
-      descripcion = "Tarifa premium (2-4 horas)";
+      tarifa = 12.00;
+      descripcion = "Tarifa por una hora (31-60 min)";
     } else {
-      const horasAdicionales = Math.ceil((minutos - 240) / 60);
-      tarifa = 16.50 + horasAdicionales * 3.00;
-      descripcion = "Tarifa máxima (+4 horas)";
+      // Para más de una hora, cobramos por horas adicionales completas
+      const horasAdicionales = Math.ceil((minutos - 60) / 60);
+      tarifa = 12.00 + (horasAdicionales * 12.00);
+      descripcion = `Tarifa por ${Math.ceil(minutos / 60)} hora(s)`;
     }
     
     return {
@@ -84,19 +79,12 @@ const SalidaVehiculos = () => {
   // Función para mostrar desglose detallado
   const obtenerDesgloseTarifa = (minutos) => {
     if (minutos <= 30) {
-      return "Base: Q1.00";
+      return "Media hora: Q6.00";
     } else if (minutos <= 60) {
-      const bloques = Math.ceil((minutos - 30) / 30);
-      return `Base: Q1.00 + ${bloques} bloque(s) × Q1.50`;
-    } else if (minutos <= 120) {
-      const bloques = Math.ceil((minutos - 60) / 30);
-      return `Base: Q2.50 + ${bloques} bloque(s) × Q2.00`;
-    } else if (minutos <= 240) {
-      const bloques = Math.ceil((minutos - 120) / 30);
-      return `Base: Q6.50 + ${bloques} bloque(s) × Q2.50`;
+      return "Una hora: Q12.00";
     } else {
-      const horas = Math.ceil((minutos - 240) / 60);
-      return `Base: Q16.50 + ${horas} hora(s) × Q3.00`;
+      const horasCompletas = Math.ceil(minutos / 60);
+      return `${horasCompletas} hora(s) × Q12.00 cada una`;
     }
   };
 
