@@ -28,7 +28,7 @@ const Vehiculos = () => {
 
   const fetchVehiculos = async () => {
     try {
-      const response = await fetch('http://localhost:3001/vehiculos/activos');
+      const response = await fetch('https://seminario-backend-1.onrender.com/vehiculos/activos');
       if (!response.ok) throw new Error('Error al obtener vehículos');
       const data = await response.json();
       setVehiculosActivos(data);
@@ -45,7 +45,7 @@ const handleSubmit = async (e) => {
   const codigoBarra = `${vehiculo.placa}-${Date.now()}`;
 
   try {
-    const response = await fetch('http://localhost:3001/vehiculos', {
+    const response = await fetch('https://seminario-backend-1.onrender.com/vehiculos', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ...vehiculo, codigo_barra: codigoBarra }),
