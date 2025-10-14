@@ -7,7 +7,7 @@ import './SalidaVehiculos.css';
 const obtenerDatosTicket = async (codigo) => {
   try {
     console.log('🔍 Buscando ticket con código de barras:', codigo);
-    const response = await fetch(`http://localhost:3001/api/ticket/${codigo}`);
+    const response = await fetch(`https://seminario-backend-1.onrender.com/api/ticket/${codigo}`);
     const data = await response.json();
     
     console.log('📡 Respuesta de la API:', data);
@@ -320,7 +320,7 @@ const SalidaVehiculos = () => {
     try {
       console.log('🔄 Procesando pago para ticket:', datosTicket.ticketId);
       
-      const response = await fetch('http://localhost:3001/api/vehiculos/salida', {
+      const response = await fetch('https://seminario-backend-1.onrender.com/api/vehiculos/salida', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
