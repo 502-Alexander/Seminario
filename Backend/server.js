@@ -80,26 +80,28 @@ app.listen(PORT, () => {
 
 ////// NUEVO VEHICULO
 // Ruta para registrar un nuevo vehículo (entrada)
-app.post('/vehiculos', (req, res) => {
-  const { placa, marca, color, tipo } = req.body;
-
-  if (!placa || !tipo) {
-    return res.status(400).json({ mensaje: 'Faltan datos obligatorios' });
-  }
+app.post("/vehiculos", (req, res) => {
+  const { placa, marca, color, tipo, codigo_barra } = req.body;
 
   const query = `
-    INSERT INTO vehiculos (placa, marca, color, tipo)
-    VALUES (?, ?, ?, ?)
+    INSERT INTO vehiculos (placa, codigo_barra, marca, color, tipo)
+    VALUES (?, ?, ?, ?, ?)
   `;
 
-  connection.query(query, [placa, marca, color, tipo], (err, results) => {
+  connection.query(query, [placa, codigo_barra, marca, color, tipo], (err, results) => {
     if (err) {
-      console.error('Error al registrar vehículo:', err);
-      return res.status(500).json({ mensaje: 'Error al registrar vehículo' });
+      console.error("❌ Error al registrar vehículo:", err);
+      return res.status(500).json({ message: "Error al registrar el vehículo" });
     }
-    res.json({ mensaje: 'Vehículo registrado correctamente', id: results.insertId });
+
+    res.status(201).json({ 
+      message: "✅ Vehículo registrado con éxito", 
+      id: results.insertId 
+    });
   });
 });
+
+
 
 // Ruta para obtener vehículos activos (los que están en el parqueo)
 app.get('/vehiculos/activos', (req, res) => {
