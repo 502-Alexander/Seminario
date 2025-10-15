@@ -7,7 +7,6 @@ function Login() {
   const [usuario, setUsuario] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [recordarme, setRecordarme] = useState(false);
-  const [rol, setRol] = useState('');
 
   const navigate = useNavigate();
 
@@ -15,16 +14,16 @@ function Login() {
     e.preventDefault();
 
     // Validación rápida antes de enviar
-    if (!usuario || !contrasena || !rol) {
+    if (!usuario || !contrasena) {
       alert("Por favor completa todos los campos");
       return;
     }
 
     try {
-const res = await fetch('https://seminario-backend-1.onrender.com/api/login', {
+      const res = await fetch('https://seminario-backend-1.onrender.com/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ usuario, contrasena, rol, recordarme })
+        body: JSON.stringify({ usuario, contrasena, recordarme })
       });
 
       const data = await res.json();
@@ -33,11 +32,9 @@ const res = await fetch('https://seminario-backend-1.onrender.com/api/login', {
       alert(data.mensaje);
 
       if (data.exito) {
-        // Instrucción para Guardar token y rol desde el backend
         localStorage.setItem("token", data.token);
         localStorage.setItem("rol", data.usuario.rol);
-        localStorage.setItem("usuario", data.usuario.usuario); // Instrucción para guardar el nombre del usuario
-        // Instrucción para Redirigir al menú
+        localStorage.setItem("usuario", data.usuario.usuario);
         navigate("/menu", { state: { rol: data.usuario.rol } });
       }
     } catch (err) {
@@ -73,20 +70,7 @@ const res = await fetch('https://seminario-backend-1.onrender.com/api/login', {
           <i className="bx bxs-lock-alt"></i>
         </div>
 
-        <div className="input-box">
-          <select
-            required
-            value={rol}
-            onChange={(e) => setRol(e.target.value)}
-            className="input"
-          >
-            <option value="">Selecciona un rol</option>
-            <option value="admin">Administrador</option>
-            <option value="usuario">Usuario</option>
-            <option value="supervisor">Supervisor</option>
-          </select>
-          <i className="bx bxs-user-badge"></i>
-        </div>
+        {/* Campo de selección de rol eliminado */}
 
         <div className="remember-forgot">
           <label>

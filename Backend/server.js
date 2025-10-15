@@ -32,32 +32,49 @@ connection.connect((err) => {
 
 // Ruta para el login
 app.post('/api/login', (req, res) => {
-  const { usuario, contrasena, rol } = req.body;
+  const { usuario, contrasena } = req.body;
 
-  if (!usuario || !contrasena || !rol) {
+  console.log("🔍 Intento de login:", { usuario, contrasena: "***" });
+
+  if (!usuario || !contrasena) {
     return res.status(400).json({ mensaje: 'Faltan datos' });
   }
 
   const query = `
     SELECT * FROM usuarios
-    WHERE BINARY usuario = ? AND contrasena = ? AND rol = ?
+    WHERE BINARY usuario = ?
     LIMIT 1
   `;
 
-  connection.query(query, [usuario, contrasena, rol], (err, results) => {
+  connection.query(query, [usuario], (err, results) => {
     if (err) {
       console.error("❌ Error en la consulta:", err);
       return res.status(500).json({ mensaje: 'Error del servidor' });
     }
 
+    console.log("📊 Resultados encontrados:", results.length);
+
     if (results.length > 0) {
       const user = results[0];
+      console.log("👤 Usuario encontrado:", user.usuario, "| Rol:", user.rol);
+      console.log("🔐 Hash en BD:", user.contrasena);
+      
+      // 🔹 Comparar la contraseña ingresada con el hash almacenado
+      const passwordMatch = bcrypt.compareSync(contrasena, user.contrasena);
+      console.log("✅ Contraseña coincide:", passwordMatch);
+      
+      if (!passwordMatch) {
+        console.log("❌ Contraseña incorrecta para usuario:", usuario);
+        return res.status(401).json({ mensaje: "Credenciales incorrectas", exito: false });
+      }
+
       const token = jwt.sign(
         { id: user.id, usuario: user.usuario, rol: user.rol },
         SECRET_KEY,
         { expiresIn: "1h" }
       );
 
+      console.log("✅ Login exitoso para:", usuario);
       res.json({ 
         mensaje: "Inicio de sesión exitoso",
         exito: true,
@@ -65,9 +82,11 @@ app.post('/api/login', (req, res) => {
         token
       });
     } else {
+      console.log("❌ Usuario no encontrado:", usuario);
       res.status(401).json({ mensaje: "Credenciales incorrectas", exito: false });
     }
   });
+  
 });
 
 // Iniciar servidor
