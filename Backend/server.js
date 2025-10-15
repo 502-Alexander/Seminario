@@ -375,7 +375,7 @@ app.post('/api/vehiculos/salida', (req, res) => {
     if (index >= estadosPosibles.length) {
       // Si ningún estado funciona, solo actualizar la hora_salida
       console.log('⚠️ No se pudo cambiar estado, solo actualizando hora_salida');
-      const querySimple = `UPDATE vehiculos SET hora_salida = NOW() WHERE id = ? AND estado = 'Activo'`;
+      const querySimple =  "UPDATE vehiculos SET hora_salida = NOW() WHERE codigo_barra = ? AND estado = 'Activo'";
       
       connection.query(querySimple, [ticketId], (err, results) => {
         if (err) {
@@ -481,6 +481,47 @@ app.get('/api/usuarios', (req, res) => {
     res.json(results);
   });
 });
+
+
+// ✅ Buscar ticket por código de barras
+app.get('/api/ticket/barcode/:codigo', (req, res) => {
+  const { codigo } = req.params;
+
+  const query = `
+    SELECT id, placa, marca, color, tipo,
+           CONVERT_TZ(hora_ingreso, '+00:00', @@session.time_zone) as hora_ingreso_local,
+           hora_ingreso
+    FROM vehiculos
+    WHERE codigo_barra = ? AND estado = 'Activo'
+    LIMIT 1
+  `;
+
+  connection.query(query, [codigo], (err, results) => {
+    if (err) {
+      console.error('❌ Error al buscar por código de barras:', err);
+      return res.status(500).json({ mensaje: 'Error del servidor' });
+    }
+
+    if (results.length > 0) {
+      const vehiculo = results[0];
+      const horaEntrada = vehiculo.hora_ingreso_local || vehiculo.hora_ingreso;
+
+      res.json({
+        success: true,
+        ticketId: vehiculo.id,
+        placa: vehiculo.placa,
+        horaEntrada,
+        vehiculo
+      });
+    } else {
+      res.status(404).json({ success: false, mensaje: 'Vehículo no encontrado con ese código de barras' });
+    }
+  });
+});
+
+
+
+
 
 // 🆕 NUEVA RUTA: Obtener registros para reportes
 app.get('/api/registros', (req, res) => {

@@ -35,7 +35,7 @@ const TicketEntrada = () => {
         {/* Código de barras */}
         {vehiculo.codigo_barra && (
           <div className="barcode-section">
-            <Barcode value={vehiculo.codigo_barra} width={2} height={60} fontSize={12} />
+            <Barcode value={vehiculo.codigo_barra} width={1} height={60} fontSize={12} />
             <p><strong>{vehiculo.codigo_barra}</strong></p>
           </div>
         )}
