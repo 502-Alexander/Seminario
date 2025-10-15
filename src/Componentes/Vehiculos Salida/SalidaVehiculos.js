@@ -6,8 +6,10 @@ import './SalidaVehiculos.css';
 // --- Función para obtener datos del ticket desde la API ---
 const obtenerDatosTicket = async (codigo) => {
   try {
+
     console.log('🔍 Buscando ticket con código:', codigo);
 const response = await fetch(`http://localhost:3001/api/ticket/barcode/${codigo}`);
+
     const data = await response.json();
     
     console.log('📡 Respuesta de la API:', data);
@@ -16,7 +18,8 @@ const response = await fetch(`http://localhost:3001/api/ticket/barcode/${codigo}
       console.log('✅ Ticket encontrado:', data);
       return {
         success: true,
-        ticketId: codigo,
+        ticketId: data.ticketId, // ID del vehículo para procesamiento
+        codigoBarras: data.codigoBarras, // Código de barras escaneado
         placa: data.placa,
         horaEntrada: data.horaEntrada,
         vehiculo: data.vehiculo
@@ -57,21 +60,16 @@ const SalidaVehiculos = () => {
     let descripcion = "";
     
     if (minutos <= 30) {
-      tarifa = 1.00;
-      descripcion = "Tarifa básica (0-30 min)";
+      tarifa = 6.00;
+      descripcion = "Tarifa por media hora (0-30 min)";
     } else if (minutos <= 60) {
-      tarifa = 1.00 + Math.ceil((minutos - 30) / 30) * 1.50;
-      descripcion = "Tarifa intermedia (31-60 min)";
-    } else if (minutos <= 120) {
-      tarifa = 2.50 + Math.ceil((minutos - 60) / 30) * 2.00;
-      descripcion = "Tarifa elevada (1-2 horas)";
-    } else if (minutos <= 240) {
-      tarifa = 6.50 + Math.ceil((minutos - 120) / 30) * 2.50;
-      descripcion = "Tarifa premium (2-4 horas)";
+      tarifa = 12.00;
+      descripcion = "Tarifa por una hora (31-60 min)";
     } else {
-      const horasAdicionales = Math.ceil((minutos - 240) / 60);
-      tarifa = 16.50 + horasAdicionales * 3.00;
-      descripcion = "Tarifa máxima (+4 horas)";
+      // Para más de una hora, cobramos por horas adicionales completas
+      const horasAdicionales = Math.ceil((minutos - 60) / 60);
+      tarifa = 12.00 + (horasAdicionales * 12.00);
+      descripcion = `Tarifa por ${Math.ceil(minutos / 60)} hora(s)`;
     }
     
     return {
@@ -84,21 +82,40 @@ const SalidaVehiculos = () => {
   // Función para mostrar desglose detallado
   const obtenerDesgloseTarifa = (minutos) => {
     if (minutos <= 30) {
-      return "Base: Q1.00";
+      return "Media hora: Q6.00";
     } else if (minutos <= 60) {
-      const bloques = Math.ceil((minutos - 30) / 30);
-      return `Base: Q1.00 + ${bloques} bloque(s) × Q1.50`;
-    } else if (minutos <= 120) {
-      const bloques = Math.ceil((minutos - 60) / 30);
-      return `Base: Q2.50 + ${bloques} bloque(s) × Q2.00`;
-    } else if (minutos <= 240) {
-      const bloques = Math.ceil((minutos - 120) / 30);
-      return `Base: Q6.50 + ${bloques} bloque(s) × Q2.50`;
+      return "Una hora: Q12.00";
     } else {
-      const horas = Math.ceil((minutos - 240) / 60);
-      return `Base: Q16.50 + ${horas} hora(s) × Q3.00`;
+      const horasCompletas = Math.ceil(minutos / 60);
+      return `${horasCompletas} hora(s) × Q12.00 cada una`;
     }
   };
+
+  // Función para resetear el formulario
+  const resetFormulario = useCallback(() => {
+    setCodigoBarras('');
+    setDatosTicket(null);
+    setTicketEncontrado(false);
+    setTiempoEstacionado(null);
+    setMontoAPagar(0);
+    setEfectivoRecibido('');
+    setCambioADar(0);
+    setInfoTarifa(null);
+    setUltimaActualizacion(null);
+    
+    // Limpiar referencias
+    datosTicketRef.current = null;
+    
+    if (intervaloRef.current) {
+      clearInterval(intervaloRef.current);
+      intervaloRef.current = null;
+    }
+    
+    if (autoRefresh) {
+      clearInterval(autoRefresh);
+      setAutoRefresh(null);
+    }
+  }, [autoRefresh]);
 
   // Función para recalcular tiempo en tiempo real
   const recalcularTiempo = useCallback((ticketData = null) => {
@@ -214,7 +231,7 @@ const SalidaVehiculos = () => {
           setDatosTicket(null);
           setTicketEncontrado(false);
           datosTicketRef.current = null;
-          setTiempoEstacionado(`Ticket no encontrado: ${ticket.error || 'ID inválido'}`);
+          setTiempoEstacionado(`Ticket no encontrado: ${ticket.error || 'Código de barras inválido'}`);
           setMontoAPagar(0);
           setInfoTarifa(null);
           setUltimaActualizacion(null);
@@ -226,7 +243,7 @@ const SalidaVehiculos = () => {
 
     const timeoutId = setTimeout(buscarTicket, 500);
     return () => clearTimeout(timeoutId);
-  }, [codigoBarras, recalcularTiempo]); // Solo depende de codigoBarras y recalcularTiempo (que es estable)
+  }, [codigoBarras, recalcularTiempo, resetFormulario]); // Incluye resetFormulario como dependencia
 
   // Limpiar auto-refresh al desmontar
   useEffect(() => {
@@ -263,7 +280,7 @@ const SalidaVehiculos = () => {
   const handleProcesarPago = async () => {
     // Validaciones mejoradas
     if (!datosTicket) {
-      alert('❌ Por favor, escanee un ticket válido primero.');
+      alert('❌ Por favor, escanee un código de barras válido primero.');
       return;
     }
     
@@ -293,7 +310,7 @@ const SalidaVehiculos = () => {
     try {
       console.log('🔄 Procesando pago para ticket:', datosTicket.ticketId);
       
-      const response = await fetch('http://localhost:3001/api/vehiculos/salida', {
+      const response = await fetch('https://seminario-backend-1.onrender.com/api/vehiculos/salida', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -335,30 +352,7 @@ const SalidaVehiculos = () => {
     }
   };
 
-  const resetFormulario = () => {
-    setCodigoBarras('');
-    setDatosTicket(null);
-    setTicketEncontrado(false);
-    setTiempoEstacionado(null);
-    setMontoAPagar(0);
-    setEfectivoRecibido('');
-    setCambioADar(0);
-    setInfoTarifa(null);
-    setUltimaActualizacion(null);
-    
-    // Limpiar referencias
-    datosTicketRef.current = null;
-    
-    if (intervaloRef.current) {
-      clearInterval(intervaloRef.current);
-      intervaloRef.current = null;
-    }
-    
-    if (autoRefresh) {
-      clearInterval(autoRefresh);
-      setAutoRefresh(null);
-    }
-  };
+
 
   return (
     <div className="salida-vehiculos-container">
@@ -386,13 +380,26 @@ const SalidaVehiculos = () => {
           <input
             id="codigoBarras"
             type="text"
-            placeholder="Ingrese el ID (ej. 1, 2, 3...)"
+            placeholder="Escanee o ingrese el código de barras (ej. ABC123-1234567890)"
             value={codigoBarras}
             onChange={(e) => setCodigoBarras(e.target.value)}
             className="input codigo-barras-campo"
             autoFocus
           />
         </div>
+
+        {/* Código de Barras Escaneado */}
+        {datosTicket && (
+          <div className="campo-grupo">
+            <label className="label">**Código de Barras:**</label>
+            <input
+              type="text"
+              value={datosTicket.codigoBarras || 'No disponible'}
+              readOnly
+              className="input auto-campo"
+            />
+          </div>
+        )}
 
         {/* Placa del vehículo */}
         {datosTicket && (
@@ -412,7 +419,7 @@ const SalidaVehiculos = () => {
           <label className="label">Tiempo Estacionado:</label>
           <input
             type="text"
-            value={tiempoEstacionado || 'Esperando código...'}
+            value={tiempoEstacionado || 'Esperando código de barras...'}
             readOnly
             className={`input ${tiempoEstacionado && tiempoEstacionado.includes('no encontrado') ? 'error-campo' : 'auto-campo'}`}
           />
