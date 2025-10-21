@@ -6,6 +6,7 @@ import Vehiculos from './Componentes/Vehiculos Entrada/EntradaVehiculos'; // Aju
 import SalidaVehiculos from './Componentes/Vehiculos Salida/SalidaVehiculos'; // Nuevo componente
 import ProtectedRoute from './ProtectedRoute';
 import TicketEntrada from './Componentes/Ticket Entrada/Ticket_Entrada'; // importa el nuevo componente
+import TicketSalidaPantalla from './Componentes/Ticket Salida/TicketSalidaPantalla'; // importa el ticket de salida
 import GestionUsuarios from './Componentes/GestionDeUsuarios/GestionUsuarios';
 import ParkingReports from './Componentes/Reportes/ParkingReports'; // Nuevo componente de reportes
 
@@ -66,6 +67,15 @@ function App() {
         element={
           <ProtectedRoute>
             <TicketEntrada />
+          </ProtectedRoute>
+        } 
+      />
+
+      <Route 
+        path="/ticket-salida" 
+        element={
+          <ProtectedRoute>
+            <TicketSalidaPantalla />
           </ProtectedRoute>
         } 
       />
