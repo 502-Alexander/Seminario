@@ -12,13 +12,13 @@ app.use(express.json());
 
 // 🔹 Configuración de conexión a Azure MySQL
 const connection = mysql.createConnection({
-  host: "seminario.mysql.database.azure.com", // ejemplo: mydbserver.mysql.database.azure.com
-  user: "administradorseminario",              // ejemplo: adminuser@mydbserver
-  password: "Seminario123",
-  database: "seminario",
-  port: 3306,
+  host: "centerbeam.proxy.rlwy.net", // ejemplo: mydbserver.mysql.database.azure.com
+  user: "root",              // ejemplo: adminuser@mydbserver
+  password: "dttnjZnyHedLgLBFMcOPlknTDrSsFAUA",
+  database: "railway",
+  port: 33366,
   ssl: {
-    rejectUnauthorized: true // Azure requiere SSL para conexiones seguras
+    rejectUnauthorized: false // Azure requiere SSL para conexiones seguras
   }
 });
 
@@ -27,7 +27,7 @@ connection.connect((err) => {
     console.error("❌ Error de conexión a Azure:", err);
     return;
   }
-  console.log("✅ Conexión exitosa a Azure MySQL");
+  console.log("✅ Conexión exitosa a RAILWAY MYSQL");
 });
 
 // Ruta para el login
