@@ -84,21 +84,21 @@ app.post("/vehiculos", (req, res) => {
   const { placa, marca, color, tipo, codigo_barra } = req.body;
 
   const query = `
-    INSERT INTO vehiculos (placa, codigo_barra, marca, color, tipo)
-    VALUES (?, ?, ?, ?, ?)
-  `;
+  INSERT INTO vehiculos (placa, codigo_barra, marca, color, tipo, estado)
+  VALUES (?, ?, ?, ?, ?, ?)
+`;
 
-  connection.query(query, [placa, codigo_barra, marca, color, tipo], (err, results) => {
-    if (err) {
-      console.error("❌ Error al registrar vehículo:", err);
-      return res.status(500).json({ message: "Error al registrar el vehículo" });
-    }
+connection.query(query, [placa, codigo_barra, marca, color, tipo, 'Activo'], (err, results) => {
+  if (err) {
+    console.error("❌ Error al registrar vehículo:", err);
+    return res.status(500).json({ message: "Error al registrar el vehículo" });
+  }
 
-    res.status(201).json({ 
-      message: "✅ Vehículo registrado con éxito", 
-      id: results.insertId 
-    });
+  res.status(201).json({ 
+    message: "✅ Vehículo registrado con éxito", 
+    id: results.insertId 
   });
+});
 });
 
 

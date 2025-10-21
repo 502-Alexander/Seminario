@@ -6,30 +6,117 @@ import './SalidaVehiculos.css';
 // --- Función para obtener datos del ticket desde la API ---
 const obtenerDatosTicket = async (codigo) => {
   try {
-
-    console.log('🔍 Buscando ticket con código:', codigo);
-const response = await fetch(`http://localhost:3001/api/ticket/barcode/${codigo}`);
-
-    const data = await response.json();
+    console.log('🔍 DEBUGGING - Buscando ticket con código/ID:', codigo);
+    console.log('🔍 DEBUGGING - Tipo de código:', typeof codigo);
+    console.log('🔍 DEBUGGING - Longitud del código:', codigo.length);
+    console.log('🔍 DEBUGGING - Código trimmed:', codigo.trim());
     
-    console.log('📡 Respuesta de la API:', data);
+    const codigoLimpio = codigo.trim();
     
-    if (response.ok && data.success) {
-      console.log('✅ Ticket encontrado:', data);
+    // 🆕 BÚSQUEDA INTELIGENTE MÚLTIPLE
+    let resultadoBusqueda = null;
+    
+    // 1️⃣ PRIMERA OPCIÓN: Buscar por ID o código de barras exacto
+    try {
+      const url1 = `https://seminario-backend-1.onrender.com/api/ticket/${codigoLimpio}`;
+      console.log('🔍 DEBUGGING - Intento 1 - URL:', url1);
+      
+      const response1 = await fetch(url1);
+      console.log('📡 DEBUGGING - Intento 1 - Status:', response1.status);
+      
+      if (response1.ok) {
+        const data1 = await response1.json();
+        console.log('📡 DEBUGGING - Intento 1 - Datos:', data1);
+        
+        if (data1.success) {
+          console.log('✅ DEBUGGING - Encontrado con búsqueda directa');
+          resultadoBusqueda = data1;
+        }
+      }
+    } catch (error1) {
+      console.log('⚠️ DEBUGGING - Error en búsqueda directa:', error1.message);
+    }
+    
+    // 2️⃣ SEGUNDA OPCIÓN: Si contiene guión, extraer placa y buscar por placa
+    if (!resultadoBusqueda && codigoLimpio.includes('-')) {
+      const placaExtraida = codigoLimpio.split('-')[0];
+      console.log('🔍 DEBUGGING - Intento 2 - Placa extraída:', placaExtraida);
+      
+      try {
+        // Buscar por placa usando endpoint personalizado
+        const url2 = `https://seminario-backend-1.onrender.com/api/vehiculo-por-placa/${placaExtraida}`;
+        console.log('� DEBUGGING - Intento 2 - URL por placa:', url2);
+        
+        const response2 = await fetch(url2);
+        console.log('📡 DEBUGGING - Intento 2 - Status:', response2.status);
+        
+        if (response2.ok) {
+          const data2 = await response2.json();
+          console.log('📡 DEBUGGING - Intento 2 - Datos:', data2);
+          
+          if (data2.success) {
+            console.log('✅ DEBUGGING - Encontrado con búsqueda por placa');
+            resultadoBusqueda = data2;
+          }
+        }
+      } catch (error2) {
+        console.log('⚠️ DEBUGGING - Error en búsqueda por placa:', error2.message);
+      }
+      
+      // 3️⃣ TERCERA OPCIÓN: Buscar manualmente en la lista de códigos disponibles
+      if (!resultadoBusqueda) {
+        try {
+          console.log('🔍 DEBUGGING - Intento 3 - Buscando en lista de códigos disponibles');
+          const response3 = await fetch('https://seminario-backend-1.onrender.com/api/test/codigos-disponibles');
+          
+          if (response3.ok) {
+            const data3 = await response3.json();
+            console.log('📡 DEBUGGING - Intento 3 - Códigos disponibles obtenidos');
+            
+            // Buscar en la lista por placa
+            const vehiculoEncontrado = data3.codigos.find(v => v.placa === placaExtraida);
+            
+            if (vehiculoEncontrado) {
+              console.log('✅ DEBUGGING - Encontrado en lista de códigos:', vehiculoEncontrado);
+              
+              // Obtener datos completos usando el ID encontrado
+              const url4 = `https://seminario-backend-1.onrender.com/api/ticket/${vehiculoEncontrado.codigo_barras}`;
+              const response4 = await fetch(url4);
+              
+              if (response4.ok) {
+                const data4 = await response4.json();
+                if (data4.success) {
+                  console.log('✅ DEBUGGING - Datos completos obtenidos por ID:', data4);
+                  resultadoBusqueda = data4;
+                }
+              }
+            }
+          }
+        } catch (error3) {
+          console.log('⚠️ DEBUGGING - Error en búsqueda manual:', error3.message);
+        }
+      }
+    }
+    
+    // PROCESAR RESULTADO FINAL
+    if (resultadoBusqueda && resultadoBusqueda.success) {
+      console.log('✅ DEBUGGING - Ticket encontrado exitosamente:', resultadoBusqueda);
       return {
         success: true,
-        ticketId: data.ticketId, // ID del vehículo para procesamiento
-        codigoBarras: data.codigoBarras, // Código de barras escaneado
-        placa: data.placa,
-        horaEntrada: data.horaEntrada,
-        vehiculo: data.vehiculo
+        ticketId: resultadoBusqueda.ticketId,
+        codigoBarras: resultadoBusqueda.codigoBarras || codigoLimpio, // Usar el código ingresado si no hay uno guardado
+        placa: resultadoBusqueda.placa,
+        horaEntrada: resultadoBusqueda.horaEntrada,
+        vehiculo: resultadoBusqueda.vehiculo
       };
     } else {
-      console.log('❌ Ticket no encontrado');
-      return { success: false, error: data.mensaje || 'Ticket no encontrado' };
+      console.log('❌ DEBUGGING - Ticket no encontrado con ningún método');
+      return { success: false, error: `No se encontró vehículo con código/placa: ${codigoLimpio}` };
     }
   } catch (error) {
-    console.error('💥 Error al obtener datos del ticket:', error);
+    console.error('💥 DEBUGGING - Error completo al obtener datos del ticket:', error);
+    console.error('💥 DEBUGGING - Error message:', error.message);
+    console.error('💥 DEBUGGING - Error stack:', error.stack);
     return { success: false, error: error.message };
   }
 };
@@ -117,7 +204,7 @@ const SalidaVehiculos = () => {
     }
   }, [autoRefresh]);
 
-  // Función para recalcular tiempo en tiempo real
+  // Función para recalcular tiempo en tiempo real (CORREGIDA - SIN ZONA HORARIA)
   const recalcularTiempo = useCallback((ticketData = null) => {
     const ticket = ticketData || datosTicketRef.current;
     
@@ -128,17 +215,13 @@ const SalidaVehiculos = () => {
     
     console.log('🔄 Recalculando con ticket:', ticket.ticketId);
     
-    // ARREGLO ZONA HORARIA: Usar UTC para ambas fechas
-    const horaSalida = new Date(); // Hora local actual
-    const horaEntrada = new Date(ticket.horaEntrada); // Viene en UTC desde BD
+    // Usar fechas directamente sin conversiones complicadas
+    const horaSalida = new Date(); // Hora actual
+    const horaEntrada = new Date(ticket.horaEntrada); // Hora de entrada desde BD
     
-    // Convertir hora actual a UTC para comparar correctamente
-    const horaSalidaUTC = new Date(horaSalida.getTime() + (horaSalida.getTimezoneOffset() * 60000));
-    
-    console.log('🕐 DEBUG - Hora de entrada desde BD (UTC):', ticket.horaEntrada);
-    console.log('🕐 DEBUG - Hora actual local:', horaSalida.toISOString());
-    console.log('🕐 DEBUG - Hora actual UTC (corregida):', horaSalidaUTC.toISOString());
-    console.log('🕐 DEBUG - Hora entrada parseada (UTC):', horaEntrada.toISOString());
+    console.log('🕐 DEBUG - Hora de entrada desde BD:', ticket.horaEntrada);
+    console.log('🕐 DEBUG - Hora actual:', horaSalida.toISOString());
+    console.log('🕐 DEBUG - Hora entrada parseada:', horaEntrada.toISOString());
     
     // Verificar si las fechas son válidas
     if (isNaN(horaEntrada.getTime())) {
@@ -147,17 +230,17 @@ const SalidaVehiculos = () => {
       return;
     }
     
-    // Calcular diferencia usando ambas fechas en UTC
-    const diferenciaMs = horaSalidaUTC.getTime() - horaEntrada.getTime();
+    // Calcular diferencia directamente
+    const diferenciaMs = horaSalida.getTime() - horaEntrada.getTime();
     const diferenciaHoras = diferenciaMs / (1000 * 60 * 60);
-    console.log('⏱️ DEBUG - Diferencia en ms (UTC correcto):', diferenciaMs);
-    console.log('⏱️ DEBUG - Diferencia en horas (UTC correcto):', diferenciaHoras.toFixed(2));
+    console.log('⏱️ DEBUG - Diferencia en ms:', diferenciaMs);
+    console.log('⏱️ DEBUG - Diferencia en horas:', diferenciaHoras.toFixed(2));
     
     let minutosReales = Math.floor(diferenciaMs / (1000 * 60));
     let segundos = Math.floor((diferenciaMs % (1000 * 60)) / 1000);
 
-    console.log('📊 DEBUG - Minutos reales calculados (corregido):', minutosReales);
-    console.log('📊 DEBUG - Segundos calculados (corregido):', segundos);
+    console.log('📊 DEBUG - Minutos reales calculados:', minutosReales);
+    console.log('📊 DEBUG - Segundos calculados:', segundos);
 
     // Asegurar que no sea menor a 0
     minutosReales = Math.max(0, minutosReales);
@@ -175,7 +258,7 @@ const SalidaVehiculos = () => {
       tiempoMostrar = `${horas}h ${minRestantes}m (${minutosReales} min total) 🔄`;
     }
     
-    console.log('💬 DEBUG - Tiempo a mostrar (CORREGIDO):', tiempoMostrar);
+    console.log('💬 DEBUG - Tiempo a mostrar:', tiempoMostrar);
     setTiempoEstacionado(tiempoMostrar);
 
     // Calcular tarifa
@@ -184,40 +267,54 @@ const SalidaVehiculos = () => {
     setInfoTarifa(tarifaInfo);
     setUltimaActualizacion(new Date().toLocaleTimeString());
     
-    console.log('✅ Recálculo completado con zona horaria corregida');
+    console.log('✅ Recálculo completado - tiempo corregido');
   }, []);
 
   // Efecto principal para búsqueda de tickets
   useEffect(() => {
     const buscarTicket = async () => {
+      console.log('🎯 DEBUGGING - useEffect ejecutándose');
+      console.log('🎯 DEBUGGING - Valor de codigoBarras:', `"${codigoBarras}"`);
+      console.log('🎯 DEBUGGING - Longitud codigoBarras:', codigoBarras.length);
+      console.log('🎯 DEBUGGING - codigoBarras trimmed:', `"${codigoBarras.trim()}"`);
+      console.log('🎯 DEBUGGING - Condición (length > 0):', codigoBarras.trim().length > 0);
+      
       if (codigoBarras.trim().length > 0) {
-        console.log('🎯 Iniciando búsqueda para código:', codigoBarras);
+        console.log('🎯 DEBUGGING - Iniciando búsqueda para código:', codigoBarras);
         
         const ticket = await obtenerDatosTicket(codigoBarras.trim());
+        console.log('🎯 DEBUGGING - Resultado de búsqueda:', ticket);
 
         if (ticket.success) {
-          console.log('✅ Procesando ticket exitoso');
+          console.log('✅ DEBUGGING - Procesando ticket exitoso');
+          
+          // Solo limpiar campos de pago si es un ticket diferente al actual
+          const esMismoTicket = datosTicket && datosTicket.ticketId === ticket.ticketId;
+          console.log('🔄 DEBUGGING - Es mismo ticket?', esMismoTicket);
+          
           setDatosTicket(ticket);
           setTicketEncontrado(true);
           
           // Guardar datos en ref para el auto-refresh
           datosTicketRef.current = ticket;
           
-          // Limpiar campos de pago solo en búsqueda inicial
-          setEfectivoRecibido('');
-          setCambioADar(0);
+          // Limpiar campos de pago solo si es un ticket nuevo/diferente
+          if (!esMismoTicket) {
+            setEfectivoRecibido('');
+            setCambioADar(0);
+          }
           
           // Recalcular tiempo inmediatamente con los datos
           setTimeout(() => recalcularTiempo(ticket), 100);
           
           // Limpiar auto-refresh anterior si existe
           if (intervaloRef.current) {
-            console.log('🛑 Limpiando auto-refresh anterior');
+            console.log('🛑 DEBUGGING - Limpiando auto-refresh anterior');
             clearInterval(intervaloRef.current);
           }
           
           // Iniciar auto-refresh
-          console.log('🚀 Iniciando auto-refresh cada 2 segundos');
+          console.log('🚀 DEBUGGING - Iniciando auto-refresh cada 2 segundos');
           const interval = setInterval(() => {
             console.log('🔄 Auto-refresh ejecutándose...', new Date().toLocaleTimeString());
             recalcularTiempo(); // Ya no necesitamos pasar parámetros, usa la ref
@@ -227,7 +324,7 @@ const SalidaVehiculos = () => {
           setAutoRefresh(interval);
           
         } else {
-          console.log('❌ Ticket no encontrado');
+          console.log('❌ DEBUGGING - Ticket no encontrado. Error:', ticket.error);
           setDatosTicket(null);
           setTicketEncontrado(false);
           datosTicketRef.current = null;
@@ -237,6 +334,7 @@ const SalidaVehiculos = () => {
           setUltimaActualizacion(null);
         }
       } else {
+        console.log('🎯 DEBUGGING - Código vacío, reseteando formulario');
         resetFormulario();
       }
     };
@@ -352,8 +450,6 @@ const SalidaVehiculos = () => {
     }
   };
 
-
-
   return (
     <div className="salida-vehiculos-container">
       {/* Navegación */}
@@ -375,12 +471,12 @@ const SalidaVehiculos = () => {
         {/* Campo de Código de Barras */}
         <div className="campo-grupo">
           <label htmlFor="codigoBarras" className="label">
-            **Escanear Código de Barras:**
+            **Escanear Código de Barras o ID:**
           </label>
           <input
             id="codigoBarras"
             type="text"
-            placeholder="Escanee o ingrese el código de barras (ej. ABC123-1234567890)"
+            placeholder="ID (ej: 30, 47) o Código de Barras (ej: 789BFG-1234567890)"
             value={codigoBarras}
             onChange={(e) => setCodigoBarras(e.target.value)}
             className="input codigo-barras-campo"
