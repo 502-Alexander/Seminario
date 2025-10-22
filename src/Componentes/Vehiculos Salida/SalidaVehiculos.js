@@ -118,6 +118,7 @@ const SalidaVehiculos = () => {
   // Ref para mantener referencia del intervalo
   const intervaloRef = useRef(null);
   const datosTicketRef = useRef(null);
+  const inputCodigoRef = useRef(null);
 
   // Función para calcular tarifa dinámica según tiempo
   const calcularTarifaDinamica = (minutos) => {
@@ -180,6 +181,13 @@ const SalidaVehiculos = () => {
       clearInterval(autoRefresh);
       setAutoRefresh(null);
     }
+    
+    // 🎯 MANTENER FOCO EN EL CAMPO DE CÓDIGO DE BARRAS
+    setTimeout(() => {
+      if (inputCodigoRef.current) {
+        inputCodigoRef.current.focus();
+      }
+    }, 100);
   }, [autoRefresh]);
 
   // Función para recalcular tiempo en tiempo real (CORREGIDA - SIN ZONA HORARIA)
@@ -309,6 +317,14 @@ const SalidaVehiculos = () => {
     };
   }, [autoRefresh]);
 
+  // 🔄 FOCO SIMPLE PARA ESCÁNERES (SIN INTERFERENCIAS)
+  useEffect(() => {
+    // Solo enfocar al cargar el componente
+    if (inputCodigoRef.current) {
+      inputCodigoRef.current.focus();
+    }
+  }, []);
+
   // Lógica de cálculo del cambio
   useEffect(() => {
     const monto = parseFloat(montoAPagar);
@@ -326,6 +342,21 @@ const SalidaVehiculos = () => {
   const handlePagoChange = (e) => {
     const valor = e.target.value.replace(/[^0-9.]/g, '');
     setEfectivoRecibido(valor);
+  };
+
+  // 🔧 MANEJADOR SIMPLE PARA CÓDIGO DE BARRAS (COMPATIBLE CON ESCÁNERES FÍSICOS)
+  const handleCodigoChange = (e) => {
+    let valor = e.target.value;
+    
+    // Solo hacer transformaciones básicas SIN interferir con el escáner
+    // 1. Convertir a mayúsculas
+    valor = valor.toUpperCase();
+    
+    // 2. Solo limpiar la comilla problemática específica
+    valor = valor.replace(/'/g, '-');
+    
+    // 3. Actualizar el estado
+    setCodigoBarras(valor);
   };
 
   const handleProcesarPago = async () => {
@@ -444,12 +475,16 @@ const SalidaVehiculos = () => {
           </label>
           <input
             id="codigoBarras"
+            ref={inputCodigoRef}
             type="text"
             placeholder="ID (ej: 30, 47) o Código de Barras (ej: 789BFG-1234567890)"
             value={codigoBarras}
-            onChange={(e) => setCodigoBarras(e.target.value)}
+            onChange={handleCodigoChange}
             className="input codigo-barras-campo"
             autoFocus
+            autoComplete="off"
+            spellCheck="false"
+            style={{ fontSize: '16px' }}
           />
         </div>
 
