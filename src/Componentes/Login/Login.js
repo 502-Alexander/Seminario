@@ -23,7 +23,7 @@ function Login() {
       //const res = await fetch('http://seminario-backend-1.onrender.com/api/login'
       // TEMPORAL: Usar servidor local para debugging
       //https://seminario-backend-1.onrender.com/api/login
-      const res = await fetch('https://seminario-backend-1.onrender.co/api/login', {
+      const res = await fetch('https://seminario-backend-1.onrender.com/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ usuario, contrasena, recordarme })
