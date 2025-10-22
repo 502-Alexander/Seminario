@@ -105,6 +105,27 @@ body {
 }
 
 
+/* Encabezado principal arriba del contenedor */
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1000px;
+  width: 86%;
+  margin: 20px auto 10px auto;
+  padding: 0 10px;
+  transform: translate(10px, 0);
+}
+
+.main-title {
+  font-size: 1.8rem;
+  margin: 0;
+  color: #fff;
+  flex-grow: 1;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
 /* Caja del menú */
 .menu-container {
   padding: 30px;
@@ -114,8 +135,8 @@ body {
   text-align: center;
   max-width: 1000px;
   width: 86%;
-  margin: 20px auto;
-  transform: translate(10px, -14px); /* Ajusta la posición horizontal */
+  margin: 0 auto 20px auto;
+  transform: translate(10px, 0);
 }
 
 .menu-header {
@@ -164,7 +185,7 @@ body {
 
 .menu-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(152px, 4px));
+  grid-template-columns: repeat(2, 150px);
   gap: 15px;
   justify-content: center;
   max-width: 900px;
