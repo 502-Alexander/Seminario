@@ -61,7 +61,7 @@ const GestionUsuarios = () => {
 
   // Cargar módulos disponibles al montar el componente
   useEffect(() => {
-    fetch('http://localhost:3001/api/modulos')
+    fetch('https://seminario-backend-1.onrender.com/api/modulos')
       .then(res => res.json())
       .then(data => setModulosDisponibles(data))
       .catch(err => console.error('Error al cargar módulos:', err));
@@ -102,7 +102,7 @@ const GestionUsuarios = () => {
   const fetchUsuarios = async () => {
     try {
       // const response = await fetch("https://seminario-backend-1.onrender.com/api/usuarios");
-      const response = await fetch("http://localhost:3001/api/usuarios");
+      const response = await fetch("https://seminario-backend-1.onrender.com/api/usuarios");
       if (!response.ok) throw new Error("Error al obtener usuarios");
       const data = await response.json();
       setUsuarios(data);
@@ -119,7 +119,7 @@ const GestionUsuarios = () => {
       
       if (editando) {
         // Actualizar usuario existente
-        const response = await fetch(`http://localhost:3001/api/usuarios/${idEditando}`, {
+        const response = await fetch(`https://seminario-backend-1.onrender.com/api/usuarios/${idEditando}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(usuario),
@@ -130,7 +130,7 @@ const GestionUsuarios = () => {
         userId = idEditando;
       } else {
         // Crear nuevo usuario
-        const response = await fetch("http://localhost:3001/api/usuarios", {
+        const response = await fetch("https://seminario-backend-1.onrender.com/api/usuarios", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(usuario),
@@ -143,7 +143,7 @@ const GestionUsuarios = () => {
       
       // Si es usuario (no admin), asignar permisos
       if (usuario.rol === "usuario") {
-        await fetch(`http://localhost:3001/api/usuarios/${userId}/permisos`, {
+        await fetch(`https://seminario-backend-1.onrender.com/api/usuarios/${userId}/permisos`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ modulos: modulosSeleccionados }),
@@ -181,7 +181,7 @@ const GestionUsuarios = () => {
     // Si es usuario, cargar sus permisos
     if (usuarioData.rol === "usuario") {
       try {
-        const response = await fetch(`http://localhost:3001/api/usuarios/${usuarioData.id}/permisos`);
+        const response = await fetch(`https://seminario-backend-1.onrender.com/api/usuarios/${usuarioData.id}/permisos`);
         const permisos = await response.json();
         
         // Marcar módulos que tiene acceso
@@ -217,7 +217,7 @@ const GestionUsuarios = () => {
     
     try {
       // const response = await fetch(`https://seminario-backend-1.onrender.com/api/usuarios/${id}`, {
-      const response = await fetch(`http://localhost:3001/api/usuarios/${id}`, {
+      const response = await fetch(`https://seminario-backend-1.onrender.com/api/usuarios/${id}`, {
         method: "DELETE",
       });
       if (!response.ok) throw new Error("Error al eliminar usuario");
