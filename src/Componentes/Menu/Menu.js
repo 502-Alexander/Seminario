@@ -10,6 +10,7 @@ import {
 
 const Menu = () => {
   const navigate = useNavigate();
+  const [modulosUsuario, setModulosUsuario] = useState([]);
 
   // 🔹 Instrucción para Validar token al cargar el componente
   useEffect(() => {
@@ -19,7 +20,7 @@ const Menu = () => {
     }
   }, [navigate]);
 
-  //const rol = localStorage.getItem("rol") || "Usuario";
+  const rol = localStorage.getItem("rol") || "usuario";
   const usuario = localStorage.getItem("usuario") || "Usuario";
   const [dateTime, setDateTime] = useState(new Date());
 
@@ -36,24 +37,44 @@ const Menu = () => {
     navigate("/");
   };
 
-  const getRolNombre = (rol) => {
-    switch(rol) {
-      case 'admin': return 'Administrador';
-      case 'usuario': return 'Usuario';
-      case 'supervisor': return 'Supervisor';
-      default: return 'Usuario';
+  // 🔹 Cargar módulos del usuario desde localStorage
+  useEffect(() => {
+    const modulosGuardados = localStorage.getItem("modulos");
+    if (modulosGuardados) {
+      try {
+        const modulos = JSON.parse(modulosGuardados);
+        // 🔹 Filtrar para excluir módulos no deseados
+        const modulosExcluidos = ['Ajustes', 'Cobros Y Facturación', 'Cálculo Automático De Tarifas'];
+        const modulosFiltrados = modulos.filter(modulo => !modulosExcluidos.includes(modulo.nombre_modulo));
+        setModulosUsuario(modulosFiltrados);
+      } catch (error) {
+        console.error("Error al parsear módulos:", error);
+        setModulosUsuario([]);
+      }
     }
+  }, []);
+
+  // 🔹 Mapeo de iconos según el nombre del icono en la BD
+  const getIconComponent = (iconName) => {
+    const iconMap = {
+      'FaUsers': <FaUsers />,
+      'FaCar': <FaCar />,
+      'FaCalculator': <FaCalculator />,
+      'FaReceipt': <FaReceipt />,
+      'FaFileInvoiceDollar': <FaFileInvoiceDollar />,
+      'FaChartPie': <FaChartPie />,
+      'FaCog': <FaCog />
+    };
+    return iconMap[iconName] || <FaCog />;
   };
 
-  const items = [
-    { icon: <FaUsers />, label: "Gestion De Usuarios Del Sistema", color: "#66d4ff", route: "/GestionUsuarios" },
-    { icon: <FaCar />, label: "Registro De Entradas y Salidas De Vehículos-", color: "#66d4ff", route: "/vehiculos" },
-    { icon: <FaCalculator />, label: "Cálculo Automático De Tarifas", color: "#66d4ff" },
-    { icon: <FaReceipt />, label: "Generación De Tickets", color: "#66d4ff", route: "/ticket" },
-    { icon: <FaFileInvoiceDollar />, label: "Cobros Y Facturación", color: "#66d4ff" },
-    { icon: <FaChartPie />, label: "Reportes Automáticos", color: "#66d4ff", route: "/reportes" },
-    { icon: <FaCog />, label: "Ajustes", color: "#66d4ff" },
-  ];
+  // 🔹 Convertir módulos del usuario a formato de items para el menú
+  const items = modulosUsuario.map(modulo => ({
+    icon: getIconComponent(modulo.icono),
+    label: modulo.nombre_modulo,
+    color: modulo.color || "#66d4ff",
+    route: modulo.ruta
+  }));
 
   return (
     <div>
@@ -73,15 +94,17 @@ const Menu = () => {
         {dateTime.toLocaleTimeString().toUpperCase()}
       </div>
 
+      {/* Título principal arriba del contenedor */}
+      <div className="main-header">
+        <h1 className="main-title">Gestión de Estacionamiento.</h1>
+        <button className="logout-button" onClick={handleLogout}>
+          <FaSignOutAlt />
+          <span>Salir</span>
+        </button>
+      </div>
+
       {/* Contenedor del menú */}
       <div className="menu-container">
-        <div className="menu-header">
-          <h1 className="menu-title">Gestión de Estacionamiento.</h1>
-          <button className="logout-button" onClick={handleLogout}>
-            <FaSignOutAlt />
-            <span>Salir</span>
-          </button>
-        </div>
         <div className="menu-grid">
   {items.map((item, index) => (
     <div
